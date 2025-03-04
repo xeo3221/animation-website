@@ -1,4 +1,6 @@
-const Button = ({ title, id, rightIcon, leftIcon, containerClass }) => {
+import { memo } from "react";
+
+const Button = memo(({ title, id, rightIcon, leftIcon, containerClass }) => {
   return (
     <button
       id={id}
@@ -12,6 +14,8 @@ const Button = ({ title, id, rightIcon, leftIcon, containerClass }) => {
       {rightIcon}
     </button>
   );
-};
+});
+
+Button.displayName = "Button";
 
 export default Button;
