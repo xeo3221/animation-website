@@ -1,7 +1,9 @@
+import Hero from "./components/Hero";
+
 function App() {
   return (
-    <main className="text-orange-500">
-      <h1>sup nerds</h1>
+    <main className="relative min-h-screen w-screen overflow-x-hidden">
+      <Hero />
     </main>
   );
 }
