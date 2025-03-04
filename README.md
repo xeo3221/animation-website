@@ -10,6 +10,9 @@ A dynamic web platform inspired by [Zentry](https://zentry.com), built with Reac
 - **Styling**: TailwindCSS
 - **Animations**: GSAP
 
+![Screenshot 2025-03-04 at 10 07 00](https://github.com/user-attachments/assets/6527dc3a-318b-4acc-b2ec-6a128fa3c95b)
+![Screenshot 2025-03-04 at 10 07 42](https://github.com/user-attachments/assets/06e07072-4903-4e3c-96d5-128b3b9047e2)
+
 ## 🛠 Getting Started
 
 1. **Clone the repository**
@@ -30,3 +33,4 @@ npm install
 ```sh
 npm run build
 ```
+
