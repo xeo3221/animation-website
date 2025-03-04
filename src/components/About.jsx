@@ -16,6 +16,8 @@ const About = () => {
         scrub: 0.5,
         pin: true,
         pinSpacing: true,
+        fastScrollEnd: true,
+        preventOverlaps: true,
       },
     });
 
@@ -53,6 +55,8 @@ const About = () => {
             src="img/about.webp"
             alt="Background"
             className="absolute left-0 top-0 size-full object-cover"
+            loading="lazy"
+            decoding="async"
           />
         </div>
       </div>

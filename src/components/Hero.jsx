@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import Button from "./Button";
 import { TiLocationArrow } from "react-icons/ti";
 import { useGSAP } from "@gsap/react";
@@ -10,7 +10,7 @@ import VideoPreview from "./VideoPreview";
 gsap.registerPlugin(ScrollTrigger);
 
 const Hero = () => {
-  const getVideoSrc = (index) => `videos/hero-${index}.mp4`;
+  const getVideoSrc = useMemo(() => (index) => `videos/hero-${index}.mp4`, []);
 
   const [currentIndex, setCurrentIndex] = useState(1);
   const [hasClicked, setHasClicked] = useState(false);
@@ -32,7 +32,25 @@ const Hero = () => {
     }
   }, [loadedVideos]);
 
-  const upcomingVideoIndex = (currentIndex % totalVideos) + 1;
+  const preloadVideos = useMemo(() => {
+    const videos = [];
+    for (let i = 1; i <= totalVideos; i++) {
+      const video = new Image();
+      video.src = getVideoSrc(i);
+      videos.push(video);
+    }
+    return videos;
+  }, [totalVideos, getVideoSrc]);
+
+  useEffect(() => {
+    preloadVideos;
+  }, [preloadVideos]);
+
+  const upcomingVideoIndex = useMemo(
+    () => (currentIndex % totalVideos) + 1,
+    [currentIndex, totalVideos]
+  );
+
   const handleMiniVideoClick = () => {
     setHasClicked(true);
     // Od razu zmieniamy małe video na następne

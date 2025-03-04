@@ -1,59 +1,57 @@
 import { gsap } from "gsap";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, memo, useCallback } from "react";
 
-export const VideoPreview = ({ children }) => {
+const VideoPreview = memo(({ children }) => {
   const [isHovering, setIsHovering] = useState(false);
+  const sectionRef = useRef(null);
+  const contentRef = useRef(null);
 
-  const sectionRef = useRef(null); // Reference for the container section
-  const contentRef = useRef(null); // Reference for the inner content
+  // Memoize handleMouseMove since it's a complex calculation
+  const handleMouseMove = useCallback(
+    ({ clientX, clientY, currentTarget }) => {
+      const rect = currentTarget.getBoundingClientRect();
+      const xOffset = clientX - (rect.left + rect.width / 2);
+      const yOffset = clientY - (rect.top + rect.height / 2);
 
-  // Handles mouse movement over the container
-  const handleMouseMove = ({ clientX, clientY, currentTarget }) => {
-    const rect = currentTarget.getBoundingClientRect(); // Get dimensions of the container
+      if (isHovering) {
+        gsap.to(sectionRef.current, {
+          x: xOffset,
+          y: yOffset,
+          rotationY: xOffset / 2,
+          rotationX: -yOffset / 2,
+          transformPerspective: 500,
+          duration: 1,
+          ease: "power1.out",
+        });
 
-    const xOffset = clientX - (rect.left + rect.width / 2); // Calculate X offset
-    const yOffset = clientY - (rect.top + rect.height / 2); // Calculate Y offset
+        gsap.to(contentRef.current, {
+          x: -xOffset,
+          y: -yOffset,
+          duration: 1,
+          ease: "power1.out",
+        });
+      }
+    },
+    [isHovering]
+  ); // Only recreate when isHovering changes
 
-    if (isHovering) {
-      // Move the container slightly in the direction of the cursor
-      gsap.to(sectionRef.current, {
-        x: xOffset,
-        y: yOffset,
-        rotationY: xOffset / 2, // Add 3D rotation effect
-        rotationX: -yOffset / 2,
-        transformPerspective: 500, // Perspective for realistic 3D effect
-        duration: 1,
-        ease: "power1.out",
-      });
-
-      // Move the inner content in the opposite direction for a parallax effect
-      gsap.to(contentRef.current, {
-        x: -xOffset,
-        y: -yOffset,
-        duration: 1,
-        ease: "power1.out",
-      });
-    }
-  };
+  // Memoize hover handlers
+  const handleMouseEnter = useCallback(() => setIsHovering(true), []);
+  const handleMouseLeave = useCallback(() => setIsHovering(false), []);
 
   useEffect(() => {
-    // Reset the position of the content when hover ends
     if (!isHovering) {
-      gsap.to(sectionRef.current, {
+      const resetAnimation = {
         x: 0,
         y: 0,
         rotationY: 0,
         rotationX: 0,
         duration: 1,
         ease: "power1.out",
-      });
+      };
 
-      gsap.to(contentRef.current, {
-        x: 0,
-        y: 0,
-        duration: 1,
-        ease: "power1.out",
-      });
+      gsap.to(sectionRef.current, resetAnimation);
+      gsap.to(contentRef.current, resetAnimation);
     }
   }, [isHovering]);
 
@@ -61,24 +59,23 @@ export const VideoPreview = ({ children }) => {
     <section
       ref={sectionRef}
       onMouseMove={handleMouseMove}
-      onMouseEnter={() => setIsHovering(true)}
-      onMouseLeave={() => setIsHovering(false)}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       className="absolute z-50 size-full overflow-hidden rounded-lg"
-      style={{
-        perspective: "500px",
-      }}
+      style={{ perspective: "500px" }}
     >
       <div
         ref={contentRef}
         className="origin-center rounded-lg"
-        style={{
-          transformStyle: "preserve-3d",
-        }}
+        style={{ transformStyle: "preserve-3d" }}
       >
         {children}
       </div>
     </section>
   );
-};
+});
+
+// Add display name for debugging
+VideoPreview.displayName = "VideoPreview";
 
 export default VideoPreview;
